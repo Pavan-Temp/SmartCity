@@ -363,7 +363,7 @@ def main():
 
     # Initialize assistant
     if 'assistant' not in st.session_state:
-        HF_TOKEN = os.getenv("HF_TOKEN")
+        HF_TOKEN = st.secrets["HF_TOKEN"]
         if not HF_TOKEN:
             st.error("Please set your Hugging Face token in the HF_TOKEN environment variable")
             st.stop()
