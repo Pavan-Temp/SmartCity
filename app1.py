@@ -1,27 +1,50 @@
 # -*- coding: utf-8 -*-
-"""Sustainable Smart City - Streamlit Version (Fixed)
+"""Sustainable Smart City - Streamlit Version
 
-Uses Hugging Face Inference API instead of downloading models locally
+Converted from Flask to Streamlit while preserving all functionality
 """
 
 import os
+import torch
 import pandas as pd
 import numpy as np
-import requests
-import json
+from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
 from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
 from datetime import datetime, timedelta
+import json
+import re
 import streamlit as st
+import threading
+import time
 from io import StringIO
+import pandas as pd
+import numpy as np
+import os
+import torch
+
+# Check GPU availability
+@st.cache_resource
+def check_gpu():
+    gpu_info = {
+        "cuda_available": torch.cuda.is_available(),
+        "device": torch.device('cuda' if torch.cuda.is_available() else 'cpu'),
+        "gpu_name": torch.cuda.get_device_name(0) if torch.cuda.is_available() else "CPU"
+    }
+    return gpu_info
 
 class SmartCityAssistant:
     def __init__(self, hf_token):
-        """Initialize the Smart City Assistant with Hugging Face API"""
+        """Initialize the Smart City Assistant with IBM Granite model"""
         self.hf_token = hf_token
-        self.api_url = "https://api-inference.huggingface.co/models/ibm-granite/granite-3.0-8b-instruct"
-        self.headers = {"Authorization": f"Bearer {hf_token}"}
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        
+        # Initialize model and tokenizer globally (one-time loading)
+        self.model_name = "ibm-granite/granite-3.0-2b-instruct"
+        self.tokenizer = None
+        self.model = None
+        self.generator = None
 
         # Storage for reports and data
         if 'citizen_reports' not in st.session_state:
@@ -29,79 +52,94 @@ class SmartCityAssistant:
         if 'kpi_data' not in st.session_state:
             st.session_state.kpi_data = {}
 
-    def query_huggingface_api(self, prompt, max_tokens=300):
-        """Query Hugging Face Inference API instead of loading model locally"""
-        try:
-            # Format prompt for instruction-following
-            formatted_prompt = f"### Instruction:\n{prompt}\n\n### Response:\n"
-            
-            payload = {
-                "inputs": formatted_prompt,
-                "parameters": {
-                    "max_new_tokens": max_tokens,
-                    "temperature": 0.7,
-                    "do_sample": True,
-                    "return_full_text": False
-                }
-            }
-            
-            response = requests.post(self.api_url, headers=self.headers, json=payload, timeout=30)
-            
-            if response.status_code == 200:
-                result = response.json()
-                if isinstance(result, list) and len(result) > 0:
-                    return result[0].get('generated_text', '').strip()
-                else:
-                    return result.get('generated_text', '').strip()
-            elif response.status_code == 503:
-                # Model is loading, use fallback
-                return self.fallback_response(prompt)
-            else:
-                st.warning(f"API Error {response.status_code}: Using fallback response")
-                return self.fallback_response(prompt)
-                
-        except Exception as e:
-            st.warning(f"API request failed: {e}. Using fallback response.")
-            return self.fallback_response(prompt)
+        self.load_model()
 
-    def fallback_response(self, prompt):
-        """Provide fallback responses when API is unavailable"""
-        fallback_responses = {
-            "policy": "Thank you for submitting the policy document. Based on standard urban policy analysis, key areas typically include: community impact, implementation timeline, budget considerations, and citizen benefits. Please refer to your local government website for detailed policy information.",
-            
-            "citizen_report": "Thank you for your report. We have received your submission and it has been categorized appropriately. Your report will be reviewed by the relevant department within 24-48 hours. We appreciate your engagement in making our city better.",
-            
-            "kpi_forecast": "Based on historical data patterns, the KPI shows measurable trends. Key factors to consider include seasonal variations, urban growth patterns, and infrastructure capacity. Regular monitoring and adaptive planning are recommended for optimal city management.",
-            
-            "eco_tips": "Here are some practical eco-friendly tips: 1) Reduce energy consumption by using LED lights and energy-efficient appliances. 2) Use public transportation or bike when possible. 3) Implement water conservation practices. 4) Participate in community recycling programs. 5) Support local sustainable businesses and initiatives.",
-            
-            "anomaly": "Data analysis completed. Any significant deviations from normal patterns should be investigated further. Consider factors such as seasonal changes, special events, or infrastructure modifications that might explain unusual readings.",
-            
-            "chat": "I'm here to help with smart city questions. While I'm currently operating in basic mode, I can provide general guidance on urban planning, sustainability, citizen services, and city management topics.",
-            
-            "traffic": "For optimal routing, consider: 1) Avoid peak hours (7-9 AM, 5-7 PM). 2) Use main arterial roads when possible. 3) Check local traffic apps for real-time conditions. 4) Explore public transportation options. 5) Plan for extra travel time during events or construction."
-        }
-        
-        # Determine response type based on prompt content
-        prompt_lower = prompt.lower()
-        if any(word in prompt_lower for word in ['policy', 'document', 'summarize']):
-            return fallback_responses["policy"]
-        elif any(word in prompt_lower for word in ['report', 'issue', 'problem']):
-            return fallback_responses["citizen_report"]
-        elif any(word in prompt_lower for word in ['forecast', 'kpi', 'predict']):
-            return fallback_responses["kpi_forecast"]
-        elif any(word in prompt_lower for word in ['eco', 'green', 'sustainable', 'tips']):
-            return fallback_responses["eco_tips"]
-        elif any(word in prompt_lower for word in ['anomaly', 'detect', 'unusual']):
-            return fallback_responses["anomaly"]
-        elif any(word in prompt_lower for word in ['traffic', 'route', 'travel']):
-            return fallback_responses["traffic"]
-        else:
-            return fallback_responses["chat"]
+    @st.cache_resource
+    def load_model(_self):
+        """Load IBM Granite model globally for faster inference"""
+        try:
+            with st.spinner("Loading IBM Granite model..."):
+                tokenizer = AutoTokenizer.from_pretrained(
+                    _self.model_name,
+                    token=_self.hf_token,
+                    trust_remote_code=True
+                )
+
+                model = AutoModelForCausalLM.from_pretrained(
+                    _self.model_name,
+                    token=_self.hf_token,
+                    torch_dtype=torch.float16,
+                    device_map="auto",
+                    trust_remote_code=True
+                )
+
+                # Create text generation pipeline
+                generator = pipeline(
+                    "text-generation",
+                    model=model,
+                    tokenizer=tokenizer,
+                    device_map="auto",
+                    torch_dtype=torch.float16,
+                    do_sample=True,
+                    temperature=0.7,
+                    max_new_tokens=512
+                )
+
+                st.success("IBM Granite model loaded successfully!")
+                return tokenizer, model, generator
+
+        except Exception as e:
+            st.error(f"Error loading IBM Granite model: {e}")
+            st.info("Falling back to DistilGPT2...")
+            try:
+                generator = pipeline(
+                    "text-generation", 
+                    model="distilgpt2",
+                    device=0 if torch.cuda.is_available() else -1,
+                    return_full_text=False
+                )
+                st.warning("Using fallback model (DistilGPT2)")
+                return None, None, generator
+            except Exception as e2:
+                st.error(f"Error loading fallback model: {e2}")
+                return None, None, None
 
     def generate_response(self, prompt, max_tokens=300):
-        """Generate response using Hugging Face API or fallback"""
-        return self.query_huggingface_api(prompt, max_tokens)
+        """Generate response using IBM Granite LLM"""
+        try:
+            if not self.generator:
+                self.tokenizer, self.model, self.generator = self.load_model()
+            
+            if not self.generator:
+                return "I apologize, but the AI model is not available at the moment. Please try again later."
+            
+            # Format prompt for instruction-following
+            formatted_prompt = f"### Instruction:\n{prompt}\n\n### Response:\n"
+
+            response = self.generator(
+                formatted_prompt,
+                max_new_tokens=max_tokens,
+                do_sample=True,
+                temperature=0.7,
+                pad_token_id=self.tokenizer.eos_token_id if self.tokenizer else 50256
+            )
+
+            # Extract only the response part
+            generated_text = response[0]['generated_text']
+            if "### Response:\n" in generated_text:
+                response_part = generated_text.split("### Response:\n")[-1].strip()
+            else:
+                response_part = generated_text.replace(formatted_prompt, "").strip()
+
+            # Ensure response is meaningful
+            if len(response_part) < 10:
+                response_part = "I understand your question about smart city services. Let me provide you with relevant information and recommendations based on best practices in urban planning and sustainability."
+
+            return response_part
+
+        except Exception as e:
+            st.error(f"Error generating response: {e}")
+            return "I apologize, but I'm experiencing technical difficulties. Please try again."
 
     def policy_summarization(self, policy_text):
         """Summarize complex policy documents"""
@@ -109,7 +147,7 @@ class SmartCityAssistant:
         Summarize the following city policy document in citizen-friendly language.
         Make it concise and highlight key points that affect residents:
 
-        {policy_text[:1500]}  # Limit input length
+        {policy_text[:2000]}  # Limit input length
 
         Provide a summary with:
         1. Main objectives
@@ -346,13 +384,14 @@ def main():
 
     st.title("🏙️ Sustainable Smart City Assistant")
     st.markdown("*AI-powered urban management and citizen services platform*")
-    
-    # Get HF Token
-    hf_token = st.secrets.get("HF_TOKEN") or os.getenv("HF_TOKEN")
+
+    # Get HF Token from environment or secrets
+    hf_token = os.getenv("HF_TOKEN") or st.secrets.get("HF_TOKEN", None)
     
     if not hf_token:
-        st.error("❌ HF_TOKEN is missing. Please set it in Streamlit secrets or environment variables.")
-        st.info("Add your Hugging Face token to use the AI features.")
+        st.error("❌ HF_TOKEN is missing. Please set your Hugging Face token.")
+        st.info("Add your HF_TOKEN to:")
+        st.code("1. Environment variables, or\n2. Streamlit secrets (in .streamlit/secrets.toml)")
         st.stop()
 
     # Initialize assistant
@@ -361,12 +400,12 @@ def main():
 
     assistant = st.session_state.assistant
 
-    # Display system info
+    # Display GPU info
+    gpu_info = check_gpu()
     with st.sidebar:
         st.header("System Information")
-        st.write("**Mode:** Cloud API (No local downloads)")
-        st.write("**Model:** IBM Granite via HF API")
-        st.success("✅ Ready to use!")
+        st.write(f"**Device:** {gpu_info['gpu_name']}")
+        st.write(f"**CUDA Available:** {gpu_info['cuda_available']}")
 
     # Navigation
     tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs([
