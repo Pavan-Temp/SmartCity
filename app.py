@@ -360,6 +360,29 @@ def main():
 
     st.title("🏙️ Sustainable Smart City Assistant")
     st.markdown("*AI-powered urban management and citizen services platform*")
+    #-------------------------------
+    # ✅ Token check snippet
+    hf_token_env = os.getenv("HF_TOKEN")
+    hf_token_secret = st.secrets.get("HF_TOKEN", None)
+    
+    st.title("🔐 Hugging Face Token Check")
+    
+    if hf_token_env:
+        st.success("✅ HF_TOKEN found in environment variables.")
+        st.code(hf_token_env[:6] + "..." + hf_token_env[-4:], language="text")
+    else:
+        st.warning("⚠️ HF_TOKEN not found in environment variables.")
+    
+    if hf_token_secret:
+        st.success("✅ HF_TOKEN found in Streamlit secrets.")
+        st.code(hf_token_secret[:6] + "..." + hf_token_secret[-4:], language="text")
+    else:
+        st.warning("⚠️ HF_TOKEN not found in Streamlit secrets.")
+    
+    hf_token = hf_token_env or hf_token_secret
+    if not hf_token:
+        st.error("❌ HF_TOKEN is missing. Set it in `.env` or Streamlit secrets.")
+    #---------------------------------
 
     # Initialize assistant
     if 'assistant' not in st.session_state:
