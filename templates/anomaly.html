@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}Anomaly Detection - Smart City Assistant{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="text-center mb-5">
+                <h1 class="display-5"><i class="fas fa-search text-warning"></i> Anomaly Detection</h1>
+                <p class="lead">Upload KPI data to detect unusual patterns and outliers</p>
+            </div>
+
+            <div class="card shadow">
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('detect_anomaly') }}" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="csv_file" class="form-label">Upload CSV File for Anomaly Detection *</label>
+                            <input 
+                                type="file" 
+                                class="form-control" 
+                                id="csv_file" 
+                                name="csv_file" 
+                                accept=".csv"
+                                required>
+                            <div class="form-text">Upload a CSV file with numerical data. The last column will be analyzed for anomalies.</div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-warning btn-lg">
+                                <i class="fas fa-search"></i> Detect Anomalies
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {% if result %}
+                {% if result.error %}
+                    <div class="alert alert-danger mt-4">
+                        <i class="fas fa-exclamation-triangle"></i> {{ result.error }}
+                    </div>
+                {% else %}
+                    <div class="card shadow mt-4">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0"><i class="fas fa-chart-bar"></i> Anomaly Detection Results</h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Summary Stats -->
+                            <div class="row mb-4">
+                                <div class="col-md-4">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <h4 class="text-primary">{{ result.total_records }}</h4>
+                                            <p class="mb-0">Total Records</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <h4 class="text-warning">{{ result.anomalies_found }}</h4>
+                                            <p class="mb-0">Anomalies Found</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            {% set anomaly_rate = (result.anomalies_found / result.total_records * 100)|round(1) %}
+                                            <h4 class="text-danger">{{ anomaly_rate }}%</h4>
+                                            <p class="mb-0">Anomaly Rate</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% if result.anomaly_records %}
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>📊 Anomalous Records</h6>
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        {% for key in result.anomaly_records[0].keys() %}
+                                                            <th>{{ key }}</th>
+                                                        {% endfor %}
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for record in result.anomaly_records[:10] %}
+                                                    <tr>
+                                                        {% for value in record.values() %}
+                                                            <td>
+                                                                {% if value is number %}
+                                                                    {{ "%.2f"|format(value) }}
+                                                                {% else %}
+                                                                    {{ value }}
+                                                                {% endif %}
+                                                            </td>
+                                                        {% endfor %}
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        {% if result.anomaly_records|length > 10 %}
+                                            <small class="text-muted">Showing first 10 anomalous records. Total: {{ result.anomaly_records|length }}</small>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <h6>🤖 AI Analysis</h6>
+                                        <div class="border-start border-4 border-warning ps-3">
+                                            {{ result.analysis }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-success">
+                                    <i class="fas fa-check-circle"></i> <strong>Great news!</strong> No significant anomalies detected in your data.
+                                </div>
+                                <div class="border-start border-4 border-success ps-3">
+                                    {{ result.analysis }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endif %}
+
+            <!-- Anomaly Detection Info -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-info-circle"></i> How Anomaly Detection Works</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>🔍 Detection Method</h6>
+                            <p>Our system uses Isolation Forest algorithm to identify data points that deviate significantly from normal patterns.</p>
+                            <ul>
+                                <li>Analyzes the last column of your CSV data</li>
+                                <li>Identifies outliers automatically</li>
+                                <li>Provides anomaly scores for each detection</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>📈 Use Cases</h6>
+                            <p>Anomaly detection is valuable for:</p>
+                            <ul>
+                                <li>Energy consumption monitoring</li>
+                                <li>Traffic volume analysis</li>
+                                <li>Water usage patterns</li>
+                                <li>Air quality measurements</li>
+                                <li>Budget and expenditure tracking</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Format Guide -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-file-csv"></i> Data Format Requirements</h5>
+                </div>
+                <div class="card-body">
+                    <p>Your CSV file should contain numerical data in the following format:</p>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>identifier</th>
+                                    <th>additional_data</th>
+                                    <th>value_to_analyze</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>record_1</td>
+                                    <td>extra info</td>
+                                    <td>100.5</td>
+                                </tr>
+                                <tr>
+                                    <td>record_2</td>
+                                    <td>extra info</td>
+                                    <td>105.2</td>
+                                </tr>
+                                <tr>
+                                    <td>record_3</td>
+                                    <td>extra info</td>
+                                    <td>999.9</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="alert alert-info">
+                        <strong>Note:</strong> The last column will be analyzed for anomalies. Ensure it contains numerical values representing the metric you want to monitor.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

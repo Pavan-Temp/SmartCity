@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}Traffic Routes - Smart City Assistant{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="text-center mb-5">
+                <h1 class="display-5"><i class="fas fa-route text-primary"></i> Traffic Route Suggestions</h1>
+                <p class="lead">Get optimal routes and discover nearby attractions</p>
+            </div>
+
+            <div class="card shadow">
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('traffic_route') }}">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="origin" class="form-label">From *</label>
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        id="origin" 
+                                        name="origin" 
+                                        placeholder="Enter starting location"
+                                        value="{{ origin if origin else '' }}"
+                                        required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="destination" class="form-label">To *</label>
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        id="destination" 
+                                        name="destination" 
+                                        placeholder="Enter destination"
+                                        value="{{ destination if destination else '' }}"
+                                        required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="city" class="form-label">City *</label>
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        id="city" 
+                                        name="city" 
+                                        placeholder="Enter city name"
+                                        value="{{ city if city else '' }}"
+                                        required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-map-marked-alt"></i> Get Route Suggestions
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {% if suggestions %}
+            <div class="card shadow mt-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-map"></i> Route Information: {{ origin }} → {{ destination }} ({{ city }})</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <strong>🗺️ AI-Generated Route Suggestions:</strong>
+                    </div>
+                    <div class="border-start border-4 border-primary ps-3">
+                        {{ suggestions|safe }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Route Planning Tips -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-lightbulb"></i> Smart Route Planning Tips</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-clock text-primary"></i> Best Times to Travel</h6>
+                            <ul class="list-unstyled">
+                                <li>🌅 Early Morning: 6:00-8:00 AM</li>
+                                <li>🌞 Mid-Morning: 10:00-11:00 AM</li>
+                                <li>🌇 Early Evening: 7:00-9:00 PM</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-exclamation-triangle text-warning"></i> Avoid Peak Hours</h6>
+                            <ul class="list-unstyled">
+                                <li>🚗 Morning Rush: 8:00-9:30 AM</li>
+                                <li>🍽️ Lunch Time: 12:00-1:00 PM</li>
+                                <li>🏠 Evening Rush: 5:00-7:00 PM</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transportation Options -->
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <i class="fas fa-bus fa-2x text-primary mb-3"></i>
+                            <h6>Public Transit</h6>
+                            <p class="text-muted">Eco-friendly and cost-effective</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <i class="fas fa-bicycle fa-2x text-success mb-3"></i>
+                            <h6>Cycling</h6>
+                            <p class="text-muted">Healthy and sustainable option</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <i class="fas fa-car fa-2x text-info mb-3"></i>
+                            <h6>Car Sharing</h6>
+                            <p class="text-muted">Flexible and convenient</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Popular Destinations -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-map-marker-alt"></i> Popular Destinations</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>🏛️ Government Buildings</h6>
+                            <ul class="list-unstyled text-muted">
+                                <li>City Hall</li>
+                                <li>Municipal Offices</li>
+                                <li>Public Libraries</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>🏥 Essential Services</h6>
+                            <ul class="list-unstyled text-muted">
+                                <li>Hospitals & Clinics</li>
+                                <li>Police Stations</li>
+                                <li>Fire Departments</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

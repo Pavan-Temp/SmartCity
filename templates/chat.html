@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Chat Assistant - Smart City Assistant{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="text-center mb-5">
+                <h1 class="display-5"><i class="fas fa-comments text-primary"></i> Smart City Chat Assistant</h1>
+                <p class="lead">Ask questions about urban planning, sustainability, and city services</p>
+            </div>
+
+            <!-- Chat History -->
+            <div class="card shadow mb-4" style="height: 400px;">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-comments"></i> Conversation</h5>
+                </div>
+                <div class="card-body overflow-auto" id="chat-container">
+                    {% if chat_history %}
+                        {% for chat in chat_history %}
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-end mb-2">
+                                <div class="bg-primary text-white rounded p-2" style="max-width: 70%;">
+                                    <strong>You:</strong> {{ chat.user }}
+                                    <small class="d-block text-light">{{ chat.timestamp.strftime('%H:%M') }}</small>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-start">
+                                <div class="bg-light rounded p-2" style="max-width: 70%;">
+                                    <strong><i class="fas fa-robot text-primary"></i> AI:</strong> {{ chat.ai }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center text-muted py-5">
+                            <i class="fas fa-comments fa-3x mb-3"></i>
+                            <p>Start a conversation by asking a question below!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="card shadow">
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('chat_send') }}">
+                        <div class="input-group">
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                name="message" 
+                                placeholder="Ask me anything about smart cities..."
+                                required>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Send
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Suggested Questions -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-lightbulb"></i> Suggested Questions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li><a href="#" class="text-decoration-none" onclick="askQuestion('What are the benefits of smart city technologies?')">
+                                    <i class="fas fa-question-circle text-primary"></i> Benefits of smart city technologies
+                                </a></li>
+                                <li><a href="#" class="text-decoration-none" onclick="askQuestion('How can cities reduce carbon emissions?')">
+                                    <i class="fas fa-question-circle text-success"></i> Reducing carbon emissions
+                                </a></li>
+                                <li><a href="#" class="text-decoration-none" onclick="askQuestion('What is sustainable urban planning?')">
+                                    <i class="fas fa-question-circle text-info"></i> Sustainable urban planning
+                                </a></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li><a href="#" class="text-decoration-none" onclick="askQuestion('How do smart traffic systems work?')">
+                                    <i class="fas fa-question-circle text-warning"></i> Smart traffic systems
+                                </a></li>
+                                <li><a href="#" class="text-decoration-none" onclick="askQuestion('What are the challenges of smart cities?')">
+                                    <i class="fas fa-question-circle text-danger"></i> Smart city challenges
+                                </a></li>
+                                <li><a href="#" class="text-decoration-none" onclick="askQuestion('How can citizens participate in city planning?')">
+                                    <i class="fas fa-question-circle text-secondary"></i> Citizen participation
+                                </a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function askQuestion(question) {
+    document.querySelector('input[name="message"]').value = question;
+}
+
+// Auto-scroll to bottom of chat
+document.addEventListener('DOMContentLoaded', function() {
+    const chatContainer = document.getElementById('chat-container');
+    if (chatContainer) {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+});
+</script>
+{% endblock %}

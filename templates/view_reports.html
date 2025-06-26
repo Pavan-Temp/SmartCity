@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}View Reports - Smart City Assistant{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="text-center mb-5">
+                <h1 class="display-5"><i class="fas fa-list text-primary"></i> All Citizen Reports</h1>
+                <p class="lead">View and manage submitted reports</p>
+            </div>
+
+            {% if reports %}
+                <!-- Summary Statistics -->
+                {% set total_reports = reports|length %}
+                {% set high_priority = reports|selectattr("priority", "equalto", "high")|list|length %}
+                {% set medium_priority = reports|selectattr("priority", "equalto", "medium")|list|length %}
+                {% set low_priority = reports|selectattr("priority", "equalto", "low")|list|length %}
+                
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body text-center">
+                                <h3>{{ total_reports }}</h3>
+                                <p class="mb-0">Total Reports</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-danger text-white">
+                            <div class="card-body text-center">
+                                <h3>{{ high_priority }}</h3>
+                                <p class="mb-0">High Priority</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-warning text-white">
+                            <div class="card-body text-center">
+                                <h3>{{ medium_priority }}</h3>
+                                <p class="mb-0">Medium Priority</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-success text-white">
+                            <div class="card-body text-center">
+                                <h3>{{ low_priority }}</h3>
+                                <p class="mb-0">Low Priority</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reports Table -->
+                <div class="card shadow">
+                    <div class="card-header">
+                        <h5><i class="fas fa-table"></i> Reports Overview</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Date</th>
+                                        <th>Category</th>
+                                        <th>Priority</th>
+                                        <th>Location</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for report in reports %}
+                                    <tr>
+                                        <td><strong>#{{ report.id }}</strong></td>
+                                        <td>{{ report.timestamp[:10] }}</td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{ report.category.title() }}</span>
+                                        </td>
+                                        <td>
+                                            {% if report.priority == 'high' %}
+                                                <span class="badge bg-danger">🔴 High</span>
+                                            {% elif report.priority == 'medium' %}
+                                                <span class="badge bg-warning">🟡 Medium</span>
+                                            {% else %}
+                                                <span class="badge bg-success">🟢 Low</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ report.location[:30] }}...</td>
+                                        <td>
+                                            <span class="badge bg-info">{{ report.status.title() }}</span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#reportModal{{ report.id }}">
+                                                <i class="fas fa-eye"></i> View
+                                            </button>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Report Detail Modal -->
+                                    <div class="modal fade" id="reportModal{{ report.id }}" tabindex="-1">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Report #{{ report.id }} Details</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-6">
+                                                            <strong>Category:</strong> {{ report.category.title() }}<br>
+                                                            <strong>Priority:</strong> {{ report.priority.title() }}<br>
+                                                            <strong>Status:</strong> {{ report.status.title() }}
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <strong>Location:</strong> {{ report.location }}<br>
+                                                            <strong>Contact:</strong> {{ report.contact or 'Not provided' }}<br>
+                                                            <strong>Date:</strong> {{ report.timestamp[:19] }}
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="mb-3">
+                                                        <strong>Description:</strong>
+                                                        <p class="border p-2 bg-light">{{ report.description }}</p>
+                                                    </div>
+                                                    
+                                                    <div class="mb-3">
+                                                        <strong>AI Response:</strong>
+                                                        <div class="alert alert-info">
+                                                            <i class="fas fa-robot"></i> {{ report.ai_response }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-inbox fa-5x text-muted mb-4"></i>
+                    <h3 class="text-muted">No Reports Submitted Yet</h3>
+                    <p class="text-muted">Once citizens start submitting reports, they will appear here.</p>
+                    <a href="{{ url_for('reports') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Submit First Report
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

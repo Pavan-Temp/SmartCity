@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Citizen Reports - Smart City Assistant{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="text-center mb-5">
+                <h1 class="display-5"><i class="fas fa-edit text-success"></i> Citizen Feedback Reports</h1>
+                <p class="lead">Submit issues and get automated responses</p>
+            </div>
+
+            <div class="card shadow">
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('submit_report') }}">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Issue Description *</label>
+                                    <textarea 
+                                        class="form-control" 
+                                        id="description" 
+                                        name="description" 
+                                        rows="4" 
+                                        placeholder="Describe the issue you want to report..."
+                                        required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="location" class="form-label">Location *</label>
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        id="location" 
+                                        name="location" 
+                                        placeholder="Enter the location of the issue"
+                                        required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="contact" class="form-label">Contact Information</label>
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        id="contact" 
+                                        name="contact" 
+                                        placeholder="Your email or phone number">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-paper-plane"></i> Submit Report
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {% if report %}
+            <div class="card shadow mt-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-check-circle"></i> Report Submitted Successfully</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h5 class="text-primary">Report ID</h5>
+                                    <h3>{{ report.id }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h5 class="text-info">Category</h5>
+                                    <h3>{{ report.category.title() }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h5 class="text-warning">Priority</h5>
+                                    <h3>
+                                        {% if report.priority == 'high' %}🔴{% endif %}
+                                        {% if report.priority == 'medium' %}🟡{% endif %}
+                                        {% if report.priority == 'low' %}🟢{% endif %}
+                                        {{ report.priority.title() }}
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-robot"></i> AI Response:</h6>
+                        <p class="mb-0">{{ report.ai_response }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Report Categories -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-tags"></i> Report Categories</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-tint text-primary"></i> <strong>Water:</strong> pipes, leaks, drainage</li>
+                                <li><i class="fas fa-car text-warning"></i> <strong>Traffic:</strong> roads, signals, parking</li>
+                                <li><i class="fas fa-leaf text-success"></i> <strong>Environment:</strong> waste, pollution, noise</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-building text-info"></i> <strong>Infrastructure:</strong> streets, lights, buildings</li>
+                                <li><i class="fas fa-shield-alt text-danger"></i> <strong>Safety:</strong> crime, emergencies, security</li>
+                                <li><i class="fas fa-question-circle text-secondary"></i> <strong>General:</strong> other city services</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

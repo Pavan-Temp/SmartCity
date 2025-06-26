@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Smart City Assistant - Home{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <div class="row align-items-center py-5">
+        <div class="col-lg-6">
+            <h1 class="display-4 fw-bold text-gradient">
+                🏙️ Sustainable Smart City Assistant
+            </h1>
+            <p class="lead">
+                AI-powered urban management and citizen services platform that helps build more sustainable and efficient cities.
+            </p>
+            <div class="d-flex gap-3 mt-4">
+                <a href="{{ url_for('reports') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-edit"></i> Submit Report
+                </a>
+                <a href="{{ url_for('chat') }}" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-comments"></i> Ask AI
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="text-center">
+                <i class="fas fa-city feature-icon text-primary"></i>
+                <h3>Smart Urban Solutions</h3>
+                <p class="text-muted">Leveraging AI to enhance city services and citizen engagement</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Grid -->
+    <div class="row g-4 py-5">
+        <div class="col-md-4">
+            <div class="card h-100 text-center border-0 shadow">
+                <div class="card-body">
+                    <i class="fas fa-file-text feature-icon text-primary"></i>
+                    <h5 class="card-title">Policy Summarization</h5>
+                    <p class="card-text">Convert complex policy documents into citizen-friendly summaries using AI.</p>
+                    <a href="{{ url_for('policy') }}" class="btn btn-primary">Get Started</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 text-center border-0 shadow">
+                <div class="card-body">
+                    <i class="fas fa-edit feature-icon text-success"></i>
+                    <h5 class="card-title">Citizen Reports</h5>
+                    <p class="card-text">Submit issues and get automated responses with priority categorization.</p>
+                    <a href="{{ url_for('reports') }}" class="btn btn-success">Submit Report</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 text-center border-0 shadow">
+                <div class="card-body">
+                    <i class="fas fa-chart-line feature-icon text-info"></i>
+                    <h5 class="card-title">KPI Forecasting</h5>
+                    <p class="card-text">Predict city metrics and get AI-powered insights for better planning.</p>
+                    <a href="{{ url_for('kpi') }}" class="btn btn-info">Analyze Data</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 text-center border-0 shadow">
+                <div class="card-body">
+                    <i class="fas fa-leaf feature-icon text-success"></i>
+                    <h5 class="card-title">Eco Tips</h5>
+                    <p class="card-text">Get personalized sustainability recommendations for eco-friendly living.</p>
+                    <a href="{{ url_for('eco') }}" class="btn btn-success">Get Tips</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 text-center border-0 shadow">
+                <div class="card-body">
+                    <i class="fas fa-search feature-icon text-warning"></i>
+                    <h5 class="card-title">Anomaly Detection</h5>
+                    <p class="card-text">Detect unusual patterns in city data to identify potential issues.</p>
+                    <a href="{{ url_for('anomaly') }}" class="btn btn-warning">Detect Anomalies</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 text-center border-0 shadow">
+                <div class="card-body">
+                    <i class="fas fa-route feature-icon text-primary"></i>
+                    <h5 class="card-title">Traffic Routes</h5>
+                    <p class="card-text">Get optimal route suggestions and discover nearby attractions.</p>
+                    <a href="{{ url_for('traffic') }}" class="btn btn-primary">Plan Route</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="row bg-light rounded p-4 mb-5">
+        <div class="col-md-12">
+            <h3 class="text-center mb-4">System Status</h3>
+            <div class="row text-center">
+                <div class="col-md-3">
+                    <div class="d-flex flex-column">
+                        <span class="h2 text-primary" id="model-status">🤖</span>
+                        <small class="text-muted">AI Model</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="d-flex flex-column">
+                        <span class="h2 text-success" id="reports-count">0</span>
+                        <small class="text-muted">Reports Submitted</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="d-flex flex-column">
+                        <span class="h2 text-info">⚡</span>
+                        <small class="text-muted">Real-time Processing</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="d-flex flex-column">
+                        <span class="h2 text-warning">🌍</span>
+                        <small class="text-muted">Global Impact</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Fetch system status
+fetch('/api/status')
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('model-status').textContent = data.model_loaded ? '✅' : '❌';
+        document.getElementById('reports-count').textContent = data.total_reports;
+    })
+    .catch(error => {
+        console.error('Error fetching status:', error);
+    });
+</script>
+{% endblock %}
