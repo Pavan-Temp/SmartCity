@@ -82,8 +82,8 @@ Here’s a quick visual tour of the platform:
 ### 🧭 Main Dashboard
 ![Dashboard](web_dashboard_images/dashboard.png)
 
-### 📄 Document Summarization Module
-![Document Summarization](web_dashboard_images/document_summary.png)
+### AI assistance
+![Document Summarization](web_dashboard_images/chatbot.png)
 
 ### 📊 KPI Forecasting
 ![KPI Forecast](web_dashboard_images/kpi_forecasting.png)
