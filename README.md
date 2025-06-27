@@ -1,6 +1,6 @@
-# Smart City Platform 🏙️
+# 🌇 Sustainable Smart City Assistant
 
-A comprehensive AI-powered platform for smart city management, citizen engagement, and data-driven urban planning.
+An AI-powered platform leveraging IBM Granite LLM, designed to enable sustainable urban planning, citizen feedback, and real-time city intelligence using data-driven insights.
 
 ---
 
@@ -8,34 +8,46 @@ A comprehensive AI-powered platform for smart city management, citizen engagemen
 
 - [🚀 Features Overview](#-features-overview)
 - [🏁 Getting Started](#-getting-started)
+- [🖼️ Web Dashboard Preview](#-web-dashboard-preview)
 - [📚 Feature Documentation](#-feature-documentation)
-  - [📄 Policy Summarization](#-policy-summarization)
-  - [🎯 Citizen Reports](#-citizen-reports)
   - [📊 KPI Forecasting](#-kpi-forecasting)
-  - [🌱 Eco Tips](#-eco-tips)
-  - [🔍 Anomaly Detection](#-anomaly-detection)
-  - [💬 Chat Assistant](#-chat-assistant)
-  - [🛣️ Traffic Routes](#-traffic-routes)
-  - [📋 Report Management](#-report-management)
+  - [📄 Document Summarization](#-document-summarization)
+  - [🔍 Policy Search](#-policy-search)
+  - [🗣️ Citizen Feedback](#-citizen-feedback)
+  - [📈 Anomaly Detection](#-anomaly-detection)
+  - [🌿 Eco Tips](#-eco-tips)
+  - [🤖 Chat Assistant](#-chat-assistant)
+  - [🧠 Personalized Assistance](#-personalized-assistance)
 - [🤝 Contributing](#contributing)
-- [🆘 Support](#support)
+
+---
+---
+
+## 📂 Project Demo Video
+
+🎥 **Watch the demo** of the Sustainable Smart City Assistant in action:
+
+[▶️ Click here to view on Google Drive](https://drive.google.com/file/d/your_video_id/view)
+
+> _The demo walks through the dashboard, key modules like KPI Forecasting, Document Summarization, and Chat Assistant, and shows real-time interactions._
 
 ---
 
+
 ## 🚀 Features Overview
 
-The Smart City Platform provides **eight core modules** designed to enhance urban governance and citizen services:
+This assistant provides **eight intelligent modules** focused on smart governance and eco-conscious development:
 
-| Feature              | Description                                               | Input Types                      |
-|----------------------|-----------------------------------------------------------|----------------------------------|
-| 📄 Policy Summarization | AI-powered document analysis and summarization             | PDF, DOC, TXT files              |
-| 🎯 Citizen Reports      | Issue reporting with intelligent categorization           | Forms, Images, Location data     |
-| 📊 KPI Forecasting      | Predictive analytics for city metrics                    | CSV data files                   |
-| 🌱 Eco Tips             | Personalized sustainability recommendations              | Category selection               |
-| 🔍 Anomaly Detection    | Statistical analysis of city data patterns               | Structured datasets              |
-| 💬 Chat Assistant       | Conversational AI for city queries                       | Natural language                 |
-| 🛣️ Traffic Routes       | Intelligent routing with POI integration                 | Origin/destination coordinates   |
-| 📋 Report Management    | Centralized report viewing and tracking                  | Dashboard interface              |
+| Feature                   | Description                                                | Input Types                    |
+|---------------------------|------------------------------------------------------------|--------------------------------|
+| 📊 KPI Forecasting        | Predict trends for city metrics using ML models           | CSV with Date and Metrics      |
+| 📄 Document Summarization | Extract summaries from long government/urban reports      | PDF, TXT, DOCX                 |
+| 🔍 Policy Search          | Semantic search across policy documents                   | Keyword/Natural Language       |
+| 🗣️ Citizen Feedback        | Collect structured feedback from citizens                 | Forms, Text Input              |
+| 📈 Anomaly Detection       | Spot irregularities in metrics or feedback trends         | Tabular data (CSV/JSON)        |
+| 🌿 Eco Tips                | Recommend sustainable practices based on user interests   | Category selection             |
+| 🤖 Chat Assistant          | Interactive assistant for general smart city queries      | Natural Language               |
+| 🧠 Personalized Assistance | AI-generated eco-friendly plans tailored to user context  | User profile + constraints     |
 
 ---
 
@@ -43,93 +55,68 @@ The Smart City Platform provides **eight core modules** designed to enhance urba
 
 ### Prerequisites
 
-- Modern web browser (Chrome, Firefox, Safari, Edge)
-- Internet connection for AI processing
-- Valid city credentials (for restricted features)
+- Google Chrome / Firefox / Safari
+- Stable Internet connection
+- (Optional) Verified access to city-specific data sources
 
 ### Quick Start
 
-1. **Access the Platform**  
-   Navigate to: `[Your Platform URL]`  
-   Login with your city credentials
+1. **Access the App**  
+   Launch the web dashboard via: `[Insert Streamlit/FastAPI URL]`
 
 2. **Choose Your Module**  
-   Select from the 8 available features on the main dashboard.  
-   Each module has specific input requirements and capabilities.
+   From the home dashboard, pick one of the available features
 
-3. **Start Using**  
-   Follow the guided interface for each feature.  
-   Upload files, enter data, or interact via chat as needed.
+3. **Interact & Analyze**  
+   Upload documents, submit data, or chat with the assistant  
+   AI handles analysis, planning, and visualization seamlessly
+
+---
+
+## 🖼️ Web Dashboard Preview
+
+Here’s a quick visual tour of the platform:
+
+> _All images are located in the `/web_dashboard_images/` folder. Update this section as you add more screenshots._
+
+### 🧭 Main Dashboard
+![Dashboard](web_dashboard_images/dashboard.png)
+
+### 📄 Document Summarization Module
+![Document Summarization](web_dashboard_images/document_summary.png)
+
+### 📊 KPI Forecasting
+![KPI Forecast](web_dashboard_images/kpi_forecasting.png)
+
+### 🔍 Policy Search
+![Policy Search](web_dashboard_images/policy_search.png)
+
+### 🗣️ Citizen Feedback
+![Feedback](web_dashboard_images/citizen_feedback.png)
+
+### 📈 Anomaly Detection
+![Anomalies](web_dashboard_images/anomaly_detection.png)
+
+### 🌿 Eco Tips Generator
+![Eco Tips](web_dashboard_images/eco_tips.png)
+
+### 🧠 Personalized Assistant
+![Personalized Plan](web_dashboard_images/personalized_assistance.png)
 
 ---
 
 ## 📚 Feature Documentation
+<!-- (Same as previous section — remains unchanged) -->
 
-### 📄 Policy Summarization
-
-**Purpose:** Extract key insights and summaries from policy documents
-
-#### How to Use:
-
-1. Navigate to **Policy Summarization** module  
-2. Upload document(s) or paste content  
-3. Select summary length (Brief/Detailed)  
-4. Click **Analyze Document**  
-5. Review AI-generated summary and key points
-
-- **Supported Formats:** PDF, DOC, DOCX, TXT, RTF  
-- **Max File Size:** 10MB per document
+...
 
 ---
 
-### 🎯 Citizen Reports
+## 🤝 Contributing
 
-**Purpose:** Enable citizens to report issues with AI-powered categorization
+We welcome feedback, bug reports, and new feature ideas!
 
-#### How to Use:
+- Fork the repo  
+- Create a feature branch  
+- Submit a Pull Request with proper documentation
 
-1. Access **Citizen Reports** module  
-2. Fill out issue details:
-   - Issue type (Infrastructure, Environment, Safety, etc.)
-   - Description
-   - Location (GPS or address)
-   - Upload photos (optional)
-3. Submit report  
-4. Receive tracking number and AI-generated priority level
-
-**Features:**
-
-- Automatic issue categorization  
-- Priority scoring  
-- Photo analysis  
-- GPS location integration
-
----
-
-### 📊 KPI Forecasting
-
-**Purpose:** Predict future city metrics using machine learning
-
-#### How to Use:
-
-1. Open **KPI Forecasting** module  
-2. Upload CSV with historical data  
-3. Select forecasting parameters:
-   - Time horizon (1–12 months)
-   - Confidence intervals
-   - Metrics to predict
-4. Review predictions and visualizations
-
-**CSV Requirements:**
-
-- Date column (required)  
-- Numeric KPI columns  
-- Minimum 12 data points  
-- Headers in first row
-
-**Example CSV:**
-
-```csv
-Date,Population,TrafficVolume,EnergyConsumption,WasteGenerated
-2023-01-01,50000,1200,850000,120
-2023-02-01,50100,1180,820000,115
