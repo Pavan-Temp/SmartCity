@@ -27,7 +27,7 @@ An AI-powered platform leveraging IBM Granite LLM, designed to enable sustainabl
 
 🎥 **Watch the demo** of the Sustainable Smart City Assistant in action:
 
-[▶️ Click here to view on Google Drive](https://drive.google.com/file/d/your_video_id/view)
+[▶️ Click here to view on Google Drive](https://drive.google.com/file/d/1vv7T4IqNNq82-fdo8gORPga3difFio1l/view?usp=drive_link)
 
 > _The demo walks through the dashboard, key modules like KPI Forecasting, Document Summarization, and Chat Assistant, and shows real-time interactions._
 
