@@ -59,19 +59,6 @@ This assistant provides **eight intelligent modules** focused on smart governanc
 - Stable Internet connection
 - (Optional) Verified access to city-specific data sources
 
-### Quick Start
-
-1. **Access the App**  
-   Launch the web dashboard via: `[Insert Streamlit/FastAPI URL]`
-
-2. **Choose Your Module**  
-   From the home dashboard, pick one of the available features
-
-3. **Interact & Analyze**  
-   Upload documents, submit data, or chat with the assistant  
-   AI handles analysis, planning, and visualization seamlessly
-
----
 
 ## 🖼️ Web Dashboard Preview
 
